@@ -1,4 +1,4 @@
-#include "WiFi.h"
+#include <WiFi.h>
 
 void setup() {
   Serial.begin(115200);
@@ -25,16 +25,16 @@ void setup() {
   }
 
   Serial.println("WiFi Connected.");
-
-  char ssid[40] = WiFi.SSID();
-  char pss[40] = WiFi.psk();
+   
+  String Ssid = WiFi.SSID();
+  String Password =  WiFi.psk();
   
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
   Serial.print("SSID: ");
-  Serial.println(ssid);
+  Serial.println(Ssid);
   Serial.print("PSS: ");
-  Serial.println(pss);
+  Serial.println(Password);
 }
 
 void loop() {
