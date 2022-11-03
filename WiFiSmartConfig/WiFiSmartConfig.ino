@@ -3,8 +3,10 @@
 #include <ESPAsyncWebServer.h>
 #include <ArduinoJson.h>
 #include <Arduino_JSON.h>
-char Ssid[40];
-char Password[40];
+#define WiFi_rst 0              // WiFi credential reset pin (Boot button on ESP32)
+char Ssid[40];                  // char variable to store SSID to SPIFFS json
+char Password[40];              // char variable to store Password to SPIFFS json
+unsigned long rst_millis;
 
 void loadConfig(){ // Load data SSID & Password WiFi .json from SPIFFS for WiFiSmartConfig
   Serial.println("Mounting FS...");
@@ -139,6 +141,7 @@ void listAllFiles(){ // Show all files in SPIFFS
 void setup() {
   Serial.begin(115200);
 
+  pinMode(WiFi_rst, INPUT); // BOOT button input
   pinMode(2, OUTPUT);
   digitalWrite(2, LOW);
 
@@ -148,6 +151,20 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
+  // BOOT button on esp32 for reset config WiFi 
+  rst_millis = millis();
+  while (digitalRead(WiFi_rst) == LOW)
+  {
+    // Wait till boot button is pressed 
+  }
+  // check the button press time if it is greater than 3sec clear wifi cred and restart ESP 
+  if (millis() - rst_millis >= 3000) {
+    Serial.println("Reseting the WiFi credentials");
+    SPIFFS.remove("/config.json");
+    Serial.println("Wifi credentials erased");
+    listAllFiles();
+    Serial.println("Restarting the ESP");
+    delay(500);
+    ESP.restart(); // Restart ESP
+  }
 }
